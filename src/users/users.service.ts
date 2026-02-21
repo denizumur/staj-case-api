@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
-@Injectable() // Bu sınıfın başka yerlere enjekte edilebilir (Dependency Injection) olduğunu belirtir.
+@Injectable()
 export class UsersService {
-  // Veritabanı olmadığı için verileri geçici olarak bu dizide (in-memory) tutuyoruz.
   private users: User[] = [];
   private idCounter = 1;
 
@@ -24,9 +24,22 @@ export class UsersService {
   findOne(id: number) {
     const user = this.users.find((u) => u.id === id);
     if (!user) {
-      // Bulunamazsa otomatik olarak HTTP 404 fırlatır.
       throw new NotFoundException(`User with ID ${id} not found`);
     }
     return user;
+  }
+
+  update(id: number, updateUserDto: UpdateUserDto) {
+    const user = this.findOne(id); // Varsa getirir, yoksa üstteki fonksiyon hata fırlatır
+    Object.assign(user, updateUserDto); // Yeni verileri eskisinin üzerine yazar
+    return user;
+  }
+
+  remove(id: number) {
+    const userIndex = this.users.findIndex((u) => u.id === id);
+    if (userIndex === -1) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return this.users.splice(userIndex, 1)[0]; // Diziden siler ve silineni döndürür
   }
 }
