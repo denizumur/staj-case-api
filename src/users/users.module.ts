@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
+import { User } from './entities/user.entity';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([User])], // BU SATIR HAYAT KURTARIR
   controllers: [UsersController],
-  providers: [UsersService], // Dependency Injection konteynerine Service'i kaydediyoruz.
+  providers: [UsersService],
 })
 export class UsersModule {}
